@@ -50,5 +50,5 @@ python run_sample_cond_radd.py --model_path $model_path --total_num 64 --batch_s
 
 ## Acknowledgements
 
-This repository was built upon [RADD](https://github.com/ML-GSAI/RADD).
+This repository is built upon [RADD](https://github.com/ML-GSAI/RADD).
 

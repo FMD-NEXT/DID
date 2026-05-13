@@ -37,5 +37,5 @@ python run_sample_radd.py --model_path $ra512 --length 512 --steps 64 --total_nu
 
 ## Acknowledgements
 
-This repository was built upon [RADD](https://github.com/ML-GSAI/RADD).
+This repository is built upon [RADD](https://github.com/ML-GSAI/RADD).
 
