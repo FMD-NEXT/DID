@@ -28,6 +28,12 @@ torchrun --nproc-per-node=8 train_ddp.py model=medium_radd ngpus=8 training.accu
 torchrun --nproc-per-node=8 train_ddp.py model=large_radd ngpus=8 training.accum=4 training.loss_type=lambda_DCE training.n_iters=400001
 ```
 
+Note that, we found the 'simple' loss [1] is beneficial for the Gen. PPL metric, i.e. just removing the 1/t coefficient in the training objectives of DLMs, which could reduce the variance of training. 
+
+With the 'simple' loss, the Gen. PPL could stably reach 114 for DID-small and 82 for DID-medium trained on the OpenWebText dataset, better than the reported results in our paper.
+
+[1] Demystifying Diffusion Objectives: Reweighted Losses are Better Variational Bounds. Jiaxin Shi, Michalis K. Titsias.
+
 ## Evaluation
 
 ```bash 
