@@ -14,7 +14,7 @@ put the `train.txt` file in `./data/gsm8k` for SFT.
 
 ## Evaluation
 
-Commonsense reasoning by comparing the (upper bound of) conditional likelihood of different options.
+Commonsense reasoning by comparing the (bound of) conditional likelihood of different options.
 ```shell
 # mdm
 accelerate launch --multi_gpu --num_processes 8 evaluate_diff.py --tasks openbookqa,winogrande,piqa,social_iqa,arc_easy,arc_challenge,hellaswag,race --model did --batch_size 64 --model_args model_name=1028,ckpt_path=$ckpt_path,mc_num=1024,nll_type='mc',greddy=False
