@@ -2,7 +2,7 @@
 
 ![Generation Process](steps_generation.gif)
 
-This repo contains an official PyTorch implementation for the ICLR'26 paper [Beyond Masks: Efficient, Flexible Diffusion Language Models via Deletion-Insertion Processes](https://openreview.net/forum?id=VbvXjs5f72) by Fangyu Ding, Ding Ding, Sijin Chen, Kaibo Wang, Peng Xu, Zijin Feng, Haoli Bai, Kai Han, Youliang Yan, Binhang Yuan, Jiacheng Sun. 
+This repo contains an official PyTorch implementation for the ICLR'26 paper [Beyond Masks: Efficient, Flexible Diffusion Language Models via Deletion-Insertion Processes](https://openreview.net/forum?id=VbvXjs5f72) by Fangyu Ding*, Ding Ding*, Sijin Chen*, Kaibo Wang, Peng Xu, Zijin Feng, Haoli Bai, Kai Han, Youliang Yan, Binhang Yuan, Jiacheng Sun. 
 
 This work first derives and implements the insertion-based discrete diffusion for text generation, which is mask-free, FLOPs-efficient, variable-length, and with special optimizations for the fixed-length setting.
 
