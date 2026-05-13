@@ -1,8 +1,8 @@
-# CUDA_VISIBLE_DEVICES=4,5,6,7 torchrun --nproc-per-node=4 train_ddp.py noise.type=loglinear model=small_radd ngpus=4 training.loss_type=MR_DSE
+# CUDA_VISIBLE_DEVICES=4,5,6,7 torchrun --nproc-per-node=4 train_ddp.py noise.type=loglinear model=small_radd ngpus=4 training.loss_type=DISE
 
 defaults:
   - _self_
-  - model: small_mrdlm
+  - model: small_did
   - override hydra/launcher: submitit_slurm
 
 ngpus: 8 # 
@@ -35,7 +35,7 @@ training:
   weight: standard
   snapshot_sampling: False
   ema: 0.9999
-  loss_type: MR_DSE #t_DCE
+  loss_type: DISE #t_DCE
 
 data:
   train: lm1b
