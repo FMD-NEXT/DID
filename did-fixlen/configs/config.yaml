@@ -1,0 +1,79 @@
+
+defaults:
+  - _self_
+  - model: small_did
+  - override hydra/launcher: submitit_slurm
+
+ngpus: 8 
+tokens: 50257
+gpt_dir: gpt2-large
+outdir: ../output
+
+dummy_class: False  
+tie_weight: False 
+cos_decay: False
+scaled_rope: False 
+
+load_dir: null 
+final_layer: seqnorm
+
+training:
+  batch_size: 512 
+  accum: 1 
+  n_iters: 400001 
+  snapshot_freq: 100000
+  log_freq: 50
+  eval_freq: 100
+  snapshot_freq_for_preemption: 5000
+  weight: standard
+  snapshot_sampling: False
+  ema: 0.9999
+  loss_type: DICE
+
+data:
+  train: openwebtext
+  take: -1
+  valid: wikitext103
+  cache_dir: data
+
+
+noise:
+  type: loglinear
+  sigma_min: 1e-4
+  sigma_max: 20
+
+sampling:
+  predictor: euler
+  steps: 1024
+
+eval:
+  batch_size: 512
+  perplexity: True
+  perplexity_batch_size: 16
+
+optim:
+  weight_decay: 0.03
+  optimizer: AdamW
+  lr: 3e-4 # 
+  beta1: 0.9
+  beta2: 0.999
+  eps: 1e-8
+  warmup: 2500
+  grad_clip: 1.
+
+
+hydra:
+  run:
+    dir: ${outdir}/${now:%Y.%m.%d}/${now:%H%M%S}
+  sweep:
+    dir: exp/${now:%Y.%m.%d}/${now:%H%M%S}
+    subdir: ${hydra.job.num}
+  launcher:
+    max_num_timeout: 100000
+    # timeout_min: 10079
+    partition: g40x
+    account: stanford
+    mem_gb: 96
+    cpus_per_task: 40
+    gpus_per_node: ${ngpus}
+    constraint: null

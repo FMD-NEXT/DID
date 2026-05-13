@@ -1,0 +1,84 @@
+import os
+import torch
+from model import DID
+import utils
+from model.ema import ExponentialMovingAverage
+import noise_lib
+
+from omegaconf import OmegaConf
+
+import json
+from omegaconf import OmegaConf
+
+
+def load_model_hf(dir, device):
+    score_model = DID.from_pretrained(dir).to(device)
+    noise = noise_lib.get_noise(score_model.config).to(device)
+    return score_model, noise
+
+def load_model_local(root_dir, device):
+    cfg = utils.load_hydra_config_from_run(root_dir)
+    noise = noise_lib.get_noise(cfg).to(device)
+    score_model = DID(cfg).to(device)
+    # print(score_model)
+
+    ema = ExponentialMovingAverage(score_model.parameters(), decay=cfg.training.ema)
+
+    ckpt_dir = os.path.join(root_dir, "checkpoints-meta", "checkpoint.pth")
+    loaded_state = torch.load(ckpt_dir, map_location=device, weights_only=False)
+
+    score_model.load_state_dict(loaded_state['model'])
+    ema.load_state_dict(loaded_state['ema'])
+
+    ema.store(score_model.parameters())
+    ema.copy_to(score_model.parameters())
+    return score_model,  noise
+
+def load_model_radd(root_dir, device):
+    # cfg = utils.load_hydra_config_from_run(root_dir)
+    cfg = utils.load_hydra_config_from_run(root_dir)
+    noise = noise_lib.get_noise(cfg).to(device)
+    from model import RADD 
+    score_model = RADD(cfg).to(device)
+    # print(score_model)
+
+    ema = ExponentialMovingAverage(score_model.parameters(), decay=cfg.training.ema)
+
+    ckpt_dir = os.path.join(root_dir, "checkpoints-meta", "checkpoint.pth")
+    loaded_state = torch.load(ckpt_dir, map_location=device, weights_only=False)
+
+    score_model.load_state_dict(loaded_state['model'])
+    ema.load_state_dict(loaded_state['ema'])
+
+    ema.store(score_model.parameters())
+    ema.copy_to(score_model.parameters())
+    return score_model,  noise
+
+    score_model = RADD.from_pretrained(root_dir).to(device)
+    noise = noise_lib.get_noise(score_model.config).to(device)
+    return score_model, noise
+
+def load_model(root_dir, device):
+    try:
+        return load_model_hf(root_dir, device)
+    except:
+        return load_model_local(root_dir, device)
+
+
+def load_model_local_cfg(root_dir, device):
+    cfg = utils.load_hydra_config_from_run(root_dir)
+    noise = noise_lib.get_noise(cfg).to(device)
+    score_model = DID(cfg).to(device)
+    # print(score_model)
+
+    ema = ExponentialMovingAverage(score_model.parameters(), decay=cfg.training.ema)
+
+    ckpt_dir = os.path.join(root_dir, "checkpoints-meta", "checkpoint.pth")
+    loaded_state = torch.load(ckpt_dir, map_location=device, weights_only=False)
+
+    score_model.load_state_dict(loaded_state['model'])
+    ema.load_state_dict(loaded_state['ema'])
+
+    ema.store(score_model.parameters())
+    ema.copy_to(score_model.parameters())
+    return score_model,  noise, cfg

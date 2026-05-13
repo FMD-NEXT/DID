@@ -1,0 +1,87 @@
+# CUDA_VISIBLE_DEVICES=4,5,6,7 torchrun --nproc-per-node=4 train_ddp.py noise.type=loglinear model=small_radd ngpus=4 training.loss_type=MR_DSE
+
+defaults:
+  - _self_
+  - model: small_mrdlm
+  - override hydra/launcher: submitit_slurm
+
+ngpus: 8 # 
+tokens: 30522 #50257
+gpt_dir: gpt2-large
+bert_dir: bert-base-uncased
+outdir: ./output
+dummy_class: False 
+tie_weight: False 
+final_layer: csoftmax
+cos_decay: False
+load_dir: null 
+scaled_rope: False
+# load_dir: ../output/2025.07.21/034533 # lin gwd
+# load_dir: ../output/2025.07.17/170228 # v2.3
+# load_dir: ../output/2025.07.22/085818 # wd01
+# load_dir: ../output/2025.07.23/022251 # lr1e-4
+
+
+
+training:
+  varylen: true
+  batch_size: 512 # 
+  accum: 1 # 
+  n_iters: 60001
+  snapshot_freq: 100000
+  log_freq: 50
+  eval_freq: 100
+  snapshot_freq_for_preemption: 5000
+  weight: standard
+  snapshot_sampling: False
+  ema: 0.9999
+  loss_type: MR_DSE #t_DCE
+
+data:
+  train: lm1b
+  take: -1
+  valid: wikitext103
+  cache_dir: data
+
+
+noise:
+  type: loglinear
+  sigma_min: 1e-4
+  sigma_max: 20
+
+sampling:
+  predictor: euler
+  steps: 1024
+
+eval:
+  varylen: true
+  batch_size: 512
+  perplexity: True
+  perplexity_batch_size: 16
+
+optim:
+  weight_decay: 0.01
+  optimizer: AdamW
+  lr: 1e-4 # 
+  beta1: 0.9
+  beta2: 0.999
+  eps: 1e-8
+  warmup: 1000
+  grad_clip: 1.
+
+
+hydra:
+  run:
+    dir: ${outdir}/${now:%Y.%m.%d}/${now:%H%M%S}
+  sweep:
+    dir: exp/${now:%Y.%m.%d}/${now:%H%M%S}
+    subdir: ${hydra.job.num}
+  launcher:
+    max_num_timeout: 100000
+    # timeout_min: 10079
+    partition: g40x
+    account: stanford
+    mem_gb: 96
+    cpus_per_task: 40
+    gpus_per_node: ${ngpus}
+    constraint: null
